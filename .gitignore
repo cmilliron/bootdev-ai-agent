@@ -11,3 +11,6 @@ wheels/
 
 # Environmental Files
 .env
+
+# Random Files
+*lorem*
