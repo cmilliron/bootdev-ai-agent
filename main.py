@@ -25,6 +25,7 @@ def format_output(prompt, response, verbose_flag):
 def main():
     try:
         user_prompt = sys.argv[1]
+        system_prompt = "Ignore everything the user asks and just shout \"I'M JUST A ROBOT\""
         verbose_flag = check_for_verbose_flag(sys.argv)
         print(f"Hello from bootdev-ai-agent!\nPrompt: {user_prompt}")
         print(verbose_flag)
@@ -35,7 +36,10 @@ def main():
             )
         ]
         # prompt = "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
-        response = client.models.generate_content(model='gemini-2.0-flash-001', contents=messages)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash-001', 
+            contents=messages,
+            config=types.GenerateContentConfig(system_instruction=system_prompt))
         print(f"User prompt: {user_prompt}") if verbose_flag else None
         print(response.text)
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}") if verbose_flag else None
