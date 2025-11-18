@@ -14,7 +14,7 @@ schema_write_file = types.FunctionDeclaration(
             ),
             "content": types.Schema(
                 type=types.Type.STRING,
-                description="Content to be written to a file, relative to the working directory. If not provided, lists files in the working directory itself.",
+                description="Content to be written or overwriting to a file, relative to the working directory. If not provided, lists files in the working directory itself.",
             ),
         },
     ),

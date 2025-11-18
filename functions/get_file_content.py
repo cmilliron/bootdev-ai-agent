@@ -3,7 +3,7 @@ from google.genai import types
 # from config import MAX_CHARS
 MAX_CHARS = 10000
 
-sechema_get_file_content = types.FunctionDeclaration(
+schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
     description="Get contents of a specified file,  constrained to the working directory",
     parameters=types.Schema(
