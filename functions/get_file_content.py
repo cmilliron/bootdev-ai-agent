@@ -5,7 +5,7 @@ MAX_CHARS = 10000
 
 schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
-    description="Get contents of a specified file, constrained to the working directory. default working directory is '.'",
+    description="Reads and returns the first {MAX_CHARS} characters of the content from a specified file within the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -13,7 +13,8 @@ schema_get_file_content = types.FunctionDeclaration(
                 type=types.Type.STRING,
                 description="The path to the file to read content from. must be provided. Will be relative to working path"
             )
-        }
+        },
+        required=["file_path"]
     )
 )
 
