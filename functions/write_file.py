@@ -1,5 +1,25 @@
 import os
 
+from google.genai import types
+
+schema_write_file = types.FunctionDeclaration(
+    name="get_write_file",
+    description="Write content to a file at a specified location, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file to read content from. must be provided."
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="Content to be written to a file, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+        },
+    ),
+)
+
 def write_file(working_directory, file_path, content):
     full_path = os.path.join(working_directory, file_path)
     if not os.path.abspath(full_path).startswith((os.path.abspath(working_directory))):
