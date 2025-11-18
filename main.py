@@ -106,6 +106,7 @@ def main():
             else:
                 print("Response:", response.text)
                 if "I am done" in response.text:
+                    
                     done = True
                 messages.append(types.Content(role="user", parts=[types.Part(text=response.text)]))
             if verbose_flag:
