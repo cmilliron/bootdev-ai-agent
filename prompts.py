@@ -9,6 +9,6 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-
-Once you you feel as you have answered the question, reponse with "I am done" 
+You can change and update files or create new files if you need them.
+Once you you feel as you have solved the problem, reponse with "I am done" 
 """
