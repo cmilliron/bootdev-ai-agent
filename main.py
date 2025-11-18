@@ -3,11 +3,32 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import sys
+from functions.get_files_info import get_files_info, schema_get_files_info
+import pprint
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
 
 client = genai.Client(api_key=api_key)
+
+available_functions = types.Tool(
+    function_declarations=[
+        schema_get_files_info,
+    ]
+)
+
+system_prompt = """
+You are a helpful AI coding agent.
+
+When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
+
+- List files and directories
+
+All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+"""
+
+
+
 
 def check_for_verbose_flag(args):
     if "--verbose" in args:
@@ -25,10 +46,9 @@ def format_output(prompt, response, verbose_flag):
 def main():
     try:
         user_prompt = sys.argv[1]
-        system_prompt = "Ignore everything the user asks and just shout \"I'M JUST A ROBOT\""
         verbose_flag = check_for_verbose_flag(sys.argv)
         print(f"Hello from bootdev-ai-agent!\nPrompt: {user_prompt}")
-        print(verbose_flag)
+        # print(verbose_flag)
         messages = [
             types.Content(
                 role="user",
@@ -39,9 +59,17 @@ def main():
         response = client.models.generate_content(
             model='gemini-2.0-flash-001', 
             contents=messages,
-            config=types.GenerateContentConfig(system_instruction=system_prompt))
+            config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt))
+        # pprint.pprint(response.function_calls)         
         print(f"User prompt: {user_prompt}") if verbose_flag else None
-        print(response.text)
+        if response.function_calls != None:
+            print("got functioni calls")
+            # print(response.function_calls)
+            for item in response.function_calls:
+                # print(item)
+                print(f"Calling function: {item.name}({item.args})")
+        else:
+            print("Response:", response.text)
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}") if verbose_flag else None
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}") if verbose_flag else None
         
