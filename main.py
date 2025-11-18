@@ -35,7 +35,7 @@ def check_for_verbose_flag(args):
 
 def format_output(prompt, response, verbose_flag):
     print(f"User prompt: {prompt}") if verbose_flag else None
-    print(response.text)
+    print("Verbose: ",response.text)
     print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}") if verbose_flag else None
     print(f"Response tokens: {response.usage_metadata.candidates_token_count}") if verbose_flag else None
 

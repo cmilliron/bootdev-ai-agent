@@ -11,10 +11,10 @@ schema_run_python_file = types.FunctionDeclaration(
                 type=types.Type.STRING,
                 description="The path to the file to execute. Required. Constrained by the working directory."
             ),
-            "args": types.Schema(
-                type=types.Type.ARRAY,
-                description="These are optional arguments for the program.",
-            ),
+            # "args": types.Schema(
+            #     type=types.Type.ARRAY,
+            #     description="These are optional arguments for the program.",
+            # ),
         },
     ),
 )
