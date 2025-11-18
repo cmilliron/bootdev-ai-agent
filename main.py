@@ -8,6 +8,7 @@ from functions.get_file_content import get_file_content, schema_get_file_content
 from functions.write_file import write_file, schema_write_file
 from functions.run_python_file import run_python_file, schema_run_python_file
 from prompts import system_prompt
+from config import MAX_ITERATIONS
 import pprint
 
 load_dotenv()
@@ -47,7 +48,7 @@ def call_functions(function_call_part, verbose=False):
         )
     else:
         function_response = function_dictionary[function_call_part.name](working_directory="./calculator", **function_call_part.args)
-        print(function_response)
+        # print(function_response)
         return types.Content(
             role="tool",
             parts=[
@@ -81,33 +82,37 @@ def format_output(prompt, response, verbose_flag):
 
 
 def main():
+    # initialization 
+    user_prompt = sys.argv[1]
+    verbose_flag = check_for_verbose_flag(sys.argv)
+    print(f"Hello from bootdev-ai-agent!\nPrompt: {user_prompt}")
+    messages = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
+    # print(verbose_flag)
+    # prompt = "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
+    iterator = 0
+    done = False
     try:
-        user_prompt = sys.argv[1]
-        verbose_flag = check_for_verbose_flag(sys.argv)
-        print(f"Hello from bootdev-ai-agent!\nPrompt: {user_prompt}")
-        # print(verbose_flag)
-        messages = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
-        # prompt = "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-001",
-            contents=messages,
-            config=types.GenerateContentConfig(
-                tools=[available_functions], system_instruction=system_prompt
-            ),
-        )
-        # pprint.pprint(response.function_calls)
-        print(f"User prompt: {user_prompt}") if verbose_flag else None
-        if response.function_calls != None:
-             # print(response.function_calls)
-            for item in response.function_calls:
-                 # print(f"Calling function: {item.name}({item.args})")
-                call_functions(item,  verbose=True)
-        else:
-            print("Response:", response.text)
-        if verbose_flag:
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-
+        while iterator < MAX_ITERATIONS and not done:
+            response = client.models.generate_content(
+                model="gemini-2.0-flash-001",
+                contents=messages,
+                config=types.GenerateContentConfig(
+                    tools=[available_functions], system_instruction=system_prompt
+                ),
+            )
+            if response.function_calls != None:
+                for item in response.function_calls:
+                    messages.append(call_functions(item,  verbose=True))
+            else:
+                print("Response:", response.text)
+                if "I am done" in response.text:
+                    done = True
+                messages.append(types.Content(role="user", parts=[types.Part(text=response.text)]))
+            if verbose_flag:
+                print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+                print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+            iterator += 1
+            
     except IndexError as index_error:
         print(
             "No prompt provided.\nRun again but provide prompt. Example: uv run main.py <prompt>"
