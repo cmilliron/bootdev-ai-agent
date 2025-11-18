@@ -4,7 +4,7 @@ from google.genai import types
 
 schema_write_file = types.FunctionDeclaration(
     name="write_file",
-    description="Write content to a file at a specified location, constrained to the working directory.",
+    description="Write content to a file at a specified location, constrained to the working directory. Creates the file if it doesn't exist",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -14,9 +14,10 @@ schema_write_file = types.FunctionDeclaration(
             ),
             "content": types.Schema(
                 type=types.Type.STRING,
-                description="Content to be written or overwriting to a file, relative to the working directory.",
+                description="Content to write to file.",
             ),
         },
+        required=["file_path", "content"]
     ),
 )
 
